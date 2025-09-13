@@ -1,3 +1,5 @@
+| ![ScreenShot 1](https://raw.githubusercontent.com/Good-Wizard/Expense-Tracker/main/screenshots/screenshot.png) |
+
 یک سیستم مدیریت مالی شخصی ساده و کارآمد که با فریم‌ورک Flask و پایگاه داده SQLite ساخته شده است. این ابزار به شما کمک می‌کند تا درآمدها و هزینه‌های خود را به‌راحتی پیگیری، تحلیل و مدیریت کنید.
 
 ## ✨ ویژگی‌ها
