@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<h2>Login</h2>
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required><br>
+    <input type="password" name="password" placeholder="Password" required><br>
+    <button type="submit">Login</button>
+</form>
+<a href="{{ url_for('register') }}">Register</a>
+<style>
+    h2 {
+        color: #34495e;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .dark-mode h2 {
+        color: #ecf0f1;
+    }
+
+    form {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode form {
+        background-color: #2c3e50;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    form input[type="text"],
+    form input[type="password"] {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        margin-bottom: 1.2rem;
+        border: 1px solid #dcdfe4;
+        border-radius: 5px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        transition: all 0.3s;
+        background-color: #f9fbfd;
+        color: #333;
+    }
+
+    .dark-mode form input {
+        background-color: #34495e;
+        color: #ecf0f1;
+        border-color: #4f6a83;
+    }
+
+    form input:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+    }
+
+    form button {
+        width: 100%;
+        background-color: #3498db;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        padding: 1rem;
+        border-radius: 5px;
+        letter-spacing: 1px;
+        transition: background-color 0.3s;
+    }
+
+    form button:hover {
+        background-color: #2980b9;
+    }
+
+    a[href*="login"],
+    a[href*="register"] {
+        display: block;
+        text-align: center;
+        margin-top: 1rem;
+        color: #3498db;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s;
+    }
+
+    a[href*="login"]:hover,
+    a[href*="register"]:hover {
+        color: #2980b9;
+    }
+</style>
+{% endblock %}

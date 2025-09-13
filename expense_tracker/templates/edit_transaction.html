@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block title %}Edit Transaction{% endblock %}
+{% block content %}
+<h2>Edit Transaction</h2>
+<form method="POST">
+    <select name="type" id="type-select" required>
+        <option value="income" {% if trans['type']=='income' %}selected{% endif %}>Income</option>
+        <option value="expense" {% if trans['type']=='expense' %}selected{% endif %}>Expense</option>
+    </select><br>
+
+    <select name="category" id="category-select" required>
+        {% for cat in categories[trans['type']] %}
+        <option value="{{ cat }}" {% if cat==trans['category'] %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" name="new_category" id="new-category" placeholder="Enter new category (optional)"
+        style="display:none;" value=""><br>
+
+    <input type="number" name="amount" value="{{ trans['amount'] }}" required><br>
+    <textarea name="description">{{ trans['description'] }}</textarea><br>
+    <button type="submit">Save</button>
+</form>
+
+<script>
+    const typeSelect = document.getElementById('type-select');
+    const categorySelect = document.getElementById('category-select');
+    const newCatInput = document.getElementById('new-category');
+
+    function updateCategories() {
+        const type = typeSelect.value;
+        fetch('/get_categories?type=' + type)
+            .then(response => response.json())
+            .then(data => {
+                categorySelect.innerHTML = '';
+                data.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.text = cat;
+                    categorySelect.add(option);
+                });
+                const currentCat = "{{ trans['category'] }}";
+                if (!data.includes(currentCat)) {
+                    const option = document.createElement('option');
+                    option.value = currentCat;
+                    option.text = currentCat;
+                    option.selected = true;
+                    categorySelect.add(option);
+                }
+                if (currentCat == 'سایر') {
+                    newCatInput.style.display = 'inline-block';
+                }
+            });
+    }
+    typeSelect.addEventListener('change', () => {
+        updateCategories();
+        newCatInput.style.display = 'none';
+    });
+
+    categorySelect.addEventListener('change', () => {
+        if (categorySelect.value == 'سایر') {
+            newCatInput.style.display = 'inline-block';
+        } else {
+            newCatInput.style.display = 'none';
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", updateCategories);
+</script>
+
+<style>
+    h2 {
+        color: #34495e;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .dark-mode h2 {
+        color: #ecf0f1;
+    }
+
+    form {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode form {
+        background-color: #2c3e50;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    form select,
+    form input[type="number"],
+    form textarea,
+    form button {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        margin-bottom: 1.2rem;
+        border: 1px solid #dcdfe4;
+        border-radius: 5px;
+        font-size: 1rem;
+        box-sizing: border-box;
+        transition: all 0.3s;
+    }
+
+    form input[type="number"]::-webkit-outer-spin-button,
+    form input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    form input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    form select,
+    form input,
+    form textarea {
+        background-color: #f9fbfd;
+        color: #333;
+    }
+
+    .dark-mode form select,
+    .dark-mode form input,
+    .dark-mode form textarea {
+        background-color: #34495e;
+        color: #ecf0f1;
+        border-color: #4f6a83;
+    }
+
+    form select:focus,
+    form input:focus,
+    form textarea:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 8px rgba(52, 152, 219, 0.4);
+    }
+
+    form button {
+        background-color: #3498db;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        padding: 1rem;
+        letter-spacing: 1px;
+    }
+
+    form button:hover {
+        background-color: #2980b9;
+    }
+
+    #new-category {
+        display: none;
+    }
+</style>
+
+{% endblock %}

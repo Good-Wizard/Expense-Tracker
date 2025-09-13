@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="summary-cards">
+    <div class="card income-card">
+        <h3>Total Income</h3>
+        <p class="amount" id="total-income">0</p>
+    </div>
+    <div class="card expense-card">
+        <h3>Total Expense</h3>
+        <p class="amount" id="total-expense">0</p>
+    </div>
+</div>
+
+<div class="chart-container">
+    <div class="chart-box">
+        <canvas id="income-expense-pie-chart"></canvas>
+    </div>
+    <div class="chart-box">
+        <canvas id="monthly-chart"></canvas>
+    </div>
+    <div class="chart-box">
+        <canvas id="income-expense-category-chart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const incomeData = {{ income_by_category| tojson }};
+    const expenseData = {{ expense_by_category| tojson }};
+    const monthlyData = {{ monthly_summary| tojson }};
+    const totalIncome = {{ total_income | tojson }};
+    const totalExpense = {{ total_expense | tojson }};
+
+
+    function getColors(isDarkMode) {
+        return {
+            income: isDarkMode ? '#2ecc71' : '#27ae60',
+            expense: isDarkMode ? '#e74c3c' : '#c0392b',
+            lineIncome: isDarkMode ? 'rgba(46, 204, 113, 0.5)' : 'rgba(39, 174, 96, 0.5)',
+            lineExpense: isDarkMode ? 'rgba(231, 76, 60, 0.5)' : 'rgba(192, 57, 43, 0.5)',
+            gridLines: isDarkMode ? 'rgba(236, 240, 241, 0.2)' : 'rgba(52, 73, 94, 0.2)',
+            fontColor: isDarkMode ? '#ecf0f1' : '#34495e',
+        };
+    }
+
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const colors = getColors(isDarkMode);
+
+    // ------------------- CHART 1: ترکیبی دسته‌ای -------------------
+    const ctxBar = document.getElementById('income-expense-category-chart').getContext('2d');
+    const allCategories = Array.from(new Set([...Object.keys(incomeData), ...Object.keys(expenseData)]));
+    const incomeVals = allCategories.map(cat => incomeData[cat] || 0);
+    const expenseVals = allCategories.map(cat => expenseData[cat] || 0);
+
+    new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: allCategories,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: incomeVals,
+                    backgroundColor: colors.income
+                },
+                {
+                    label: 'Expense',
+                    data: expenseVals,
+                    backgroundColor: colors.expense
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function (context) {
+                            const datasetLabel = context.dataset.label;
+                            const value = context.dataset.data[context.dataIndex];
+                            return `${datasetLabel}: ${value}`;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'top',
+                    labels: { color: colors.fontColor }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: false,
+                    ticks: { color: colors.fontColor },
+                    grid: { color: colors.gridLines }
+                },
+                y: {
+                    stacked: false,
+                    ticks: { color: colors.fontColor },
+                    grid: { color: colors.gridLines }
+                }
+            }
+        }
+    });
+
+    // ------------------- CHART 2: نمودار خطی ماهانه -------------------
+    const ctxLine = document.getElementById('monthly-chart').getContext('2d');
+    const months = Object.keys(monthlyData);
+    const incomeMonthly = Object.values(monthlyData).map(d => d.income);
+    const expenseMonthly = Object.values(monthlyData).map(d => d.expense);
+
+    new Chart(ctxLine, {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: incomeMonthly,
+                    borderColor: colors.income,
+                    backgroundColor: colors.lineIncome,
+                    fill: true,
+                    tension: 0.3
+                },
+                {
+                    label: 'Expense',
+                    data: expenseMonthly,
+                    borderColor: colors.expense,
+                    backgroundColor: colors.lineExpense,
+                    fill: true,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function (context) {
+                            return `${context.dataset.label}: ${context.dataset.data[context.dataIndex]}`;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'top',
+                    labels: { color: colors.fontColor }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: colors.fontColor },
+                    grid: { color: colors.gridLines }
+                },
+                x: {
+                    ticks: { color: colors.fontColor },
+                    grid: { color: colors.gridLines }
+                }
+            }
+        }
+    });
+
+    // ------------------- CHART 3: دایره‌ای ترکیبی -------------------
+    const ctxPie = document.getElementById('income-expense-pie-chart').getContext('2d');
+    new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: allCategories,
+            datasets: [
+                {
+                    label: 'Income',
+                    data: incomeVals,
+                    backgroundColor: allCategories.map(_ => colors.income),
+                    borderWidth: 1,
+                    borderColor: colors.fontColor
+                },
+                {
+                    label: 'Expense',
+                    data: expenseVals,
+                    backgroundColor: allCategories.map(_ => colors.expense),
+                    borderWidth: 1,
+                    borderColor: colors.fontColor
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '50%',
+            plugins: {
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                legend: { display: false }
+            },
+            animation: {
+                animateRotate: true,
+                animateScale: true
+            }
+        }
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+
+        document.getElementById('total-income').textContent = `${totalIncome}`;
+        document.getElementById('total-expense').textContent = `${totalExpense}`;
+    });
+</script>
+
+<style>
+    .summary-cards {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        background-color: white;
+        padding: 1.5rem 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        flex: 1;
+        max-width: 300px;
+        transition: transform 0.3s ease;
+    }
+
+    .dark-mode .card {
+        background-color: #2c3e50;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card h3 {
+        margin-top: 0;
+        font-size: 1.2rem;
+        color: #34495e;
+    }
+
+    .dark-mode .card h3 {
+        color: #ecf0f1;
+    }
+
+    .card .amount {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0.5rem 0 0;
+    }
+
+    .income-card .amount {
+        color: #27ae60;
+    }
+
+    .expense-card .amount {
+        color: #c0392b;
+    }
+
+
+    h2 {
+        color: #34495e;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .dark-mode h2 {
+        color: #ecf0f1;
+    }
+
+    .chart-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        padding: 1.5rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode .chart-wrapper {
+        background-color: #2c3e50;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    canvas {
+        width: 100% !important;
+
+        max-height: 400px;
+
+    }
+
+
+    .dark-mode .chartjs-tooltip {
+        background-color: #465a6c !important;
+        color: #ecf0f1 !important;
+        border: 1px solid #34495e;
+    }
+
+    .dark-mode .chartjs-tooltip-header {
+        background-color: #34495e !important;
+        color: #ecf0f1 !important;
+    }
+
+    .chart-container {
+        display: flex;
+        flex-wrap: wrap;
+
+        gap: 1.5rem;
+        padding: 1.5rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode .chart-container {
+        background-color: #2c3e50;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    .chart-box {
+        flex: 1;
+        min-width: 250px;
+        height: 350px;
+
+    }
+
+    .dark-mode .chartjs-tooltip {
+        background-color: #465a6c !important;
+        color: #ecf0f1 !important;
+        border: 1px solid #34495e;
+    }
+
+    .dark-mode .chartjs-tooltip-header {
+        background-color: #34495e !important;
+        color: #ecf0f1 !important;
+    }
+</style>
+{% endblock %}
