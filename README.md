@@ -20,7 +20,7 @@
 
 1.  **پایگاه کد را کلون کنید:**
     ```bash
-    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+    git clone [https://github.com/Good-Wizard/Expense-Tracker.git]
     ```
 
 3.  **کتابخانه‌های مورد نیاز را نصب کنید:**
