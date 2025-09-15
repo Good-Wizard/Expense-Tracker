@@ -1,29 +1,29 @@
 ![Screenshot](Screenshot.png)
 
-یک سیستم مدیریت مالی شخصی ساده و کارآمد که با فریم‌ورک Flask و پایگاه داده SQLite ساخته شده است. این ابزار به شما کمک می‌کند تا درآمدها و هزینه‌های خود را به‌راحتی پیگیری، تحلیل و مدیریت کنید.
+A simple and efficient personal finance management system built with the Flask framework and SQLite database. This tool helps you easily track, analyze and manage your income and expenses.
 
-## ✨ ویژگی‌ها
+## ✨ Features
 
-* **مدیریت تراکنش‌ها**: افزودن، ویرایش و حذف آسان تراکنش‌ها (درآمد و هزینه).
-* **داشبورد تعاملی**: نمایش بصری وضعیت مالی از طریق نمودارهای میله‌ای، خطی و دایره‌ای.
-* **خلاصه مالی**: نمایش مجموع درآمد و هزینه در یک نگاه.
-* **جستجو و مرتب‌سازی**: فیلتر کردن و مرتب‌سازی تراکنش‌ها بر اساس نوع، دسته‌بندی، مبلغ و تاریخ.
-* **خروجی گرفتن**: امکان دریافت گزارش‌ها در قالب فایل‌های CSV و Excel.
-* **رابط کاربری جذاب**: طراحی مدرن و واکنش‌گرا با پشتیبانی از حالت‌های روشن و تاریک.
-* **احراز هویت**: سیستم ورود و ثبت‌نام امن برای کاربران.
+* **Transaction Management**: Easily add, edit and delete transactions (income and expenses).
+* **Interactive Dashboard**: Visually display your financial status through bar, line and pie charts.
+* **Financial Summary**: Display your total income and expenses at a glance.
+* **Search and Sort**: Filter and sort transactions by type, category, amount and date.
+* **Get Output**: Ability to receive reports in CSV and Excel files.
+* **Attractive UI**: Modern and responsive design with support for light and dark modes.
+* **Authentication**: Secure login and registration system for users.
 
 ---
 
-## 🚀 نصب و راه‌اندازی
+## 🚀 Installation and Setup
 
-برای اجرای پروژه روی سیستم خود، مراحل زیر را دنبال کنید:
+To run the project on your system, follow these steps:
 
-1.  **پایگاه کد را کلون کنید:**
+1. **Clone the codebase:**
     ```bash
     git clone https://github.com/Good-Wizard/Expense-Tracker.git
     ```
 
-3.  **کتابخانه‌های مورد نیاز را نصب کنید:**
+3. **Install the required libraries:**
     ```bash
     pip install -r requirements.txt
     ```
